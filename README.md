@@ -1,13 +1,13 @@
-# Domain API Scanner
+# Chunks Scanner
 
 ## Description
-The Domain API Scanner is a Python-based tool that scans JavaScript chunk URLs for API endpoints, keys, and sensitive data. It uses predefined regex patterns to identify and extract useful information from the content. Results are saved in a dark-mode HTML report for easy analysis.
+The Chunk Scanner is a Python-based tool designed to scan JavaScript chunk files for sensitive data such as API keys, endpoints, JWTs, and more. The tool fetches these chunk URLs from a text file, analyzes their content using regex patterns, and generates a dark-themed HTML report.
 
 ## Features
-- Extracts API keys, URLs, endpoints, IP addresses, JWTs, and more.
-- Identifies sensitive files and error messages.
+- Extracts API keys, URLs, JWTs, IP addresses, credentials, and more.
 - Processes multiple JavaScript chunk URLs from a file.
-- Generates a visually appealing HTML report with results.
+- Generates a user-friendly HTML report.
+- Supports manual or automated collection of chunk URLs.
 
 ## Usage
 
@@ -22,25 +22,28 @@ pip install requests
 
 ### Steps
 
-1. Clone the repository:
+1. Collect JavaScript chunk URLs:
+   - **Option 1**: Use tools like `waybackurls` to fetch archived URLs for the target domain.
+   - **Option 2**: Browse the target site thoroughly, capture requests in Burp Suite, and filter JavaScript chunk URLs.
+   - Save these URLs in a text file (e.g., `urls-js.txt`).
+
+2. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/repository-name.git
-   cd repository-name
+   git clone https://github.com/your-username/chunk-scanner.git
+   cd chunk-scanner
    ```
 
-2. Prepare a text file (e.g., `file.txt`) with the JavaScript chunk URLs, one URL per line.
-
-3. Run the script with the file as an argument:
+3. Run the script with your URLs file:
    ```bash
-   python domain_api_scanner.py -f file.txt
+   python3 chunk_scanner.py -f urls-js.txt
    ```
 
 4. View the results:
    - The script generates an HTML file named `scan_results.html` in the same directory.
-   - Open it in your browser to view the results.
+   - Open this file in a browser to review the extracted data.
 
 ### Example File Format
-Contents of `file.txt`:
+Contents of `urls-js.txt`:
 ```
 https://example.com/static/js/chunk1.js
 https://example.com/static/js/chunk2.js
@@ -48,13 +51,16 @@ https://example.com/static/js/chunk3.js
 ```
 
 ### Output
-- **API Keys**: Extracted API keys from the scanned content.
-- **Endpoints**: Identified API endpoints.
-- **Sensitive Data**: Includes credentials, JWTs, and error messages.
+The output includes:
+- **API Keys**: Identified API keys.
+- **Endpoints**: Extracted API endpoints.
+- **JWTs**: Detected JSON Web Tokens.
+- **Credentials**: Usernames and passwords.
+- **Error Messages**: Useful for debugging and potential vulnerabilities.
 
 ## License
 This project is licensed under the MIT License.
 
 ---
-Feel free to contribute or submit issues on the [GitHub repository](https://github.com/your-username/repository-name).
+Feel free to contribute or submit issues on the [GitHub repository](https://github.com/your-username/chunk-scanner).
 
