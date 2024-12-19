@@ -1,12 +1,12 @@
 # Domain API Scanner
 
 ## Description
-The Domain API Scanner is a Python-based tool that scans multiple domains and subdomains for API endpoints, keys, and sensitive data. It uses predefined regex patterns to identify and extract useful information from HTML content. Results are saved in a dark-mode HTML report for easy analysis.
+The Domain API Scanner is a Python-based tool that scans JavaScript chunk URLs for API endpoints, keys, and sensitive data. It uses predefined regex patterns to identify and extract useful information from the content. Results are saved in a dark-mode HTML report for easy analysis.
 
 ## Features
 - Extracts API keys, URLs, endpoints, IP addresses, JWTs, and more.
 - Identifies sensitive files and error messages.
-- Supports scanning across multiple subdomains and paths.
+- Processes multiple JavaScript chunk URLs from a file.
 - Generates a visually appealing HTML report with results.
 
 ## Usage
@@ -28,26 +28,23 @@ pip install requests
    cd repository-name
    ```
 
-2. Edit the `main()` function in the script to specify:
-   - **Domain**: The target domain to scan.
-   - **Subdomains**: List of subdomains to scan.
-   - **Paths**: API paths to check.
+2. Prepare a text file (e.g., `file.txt`) with the JavaScript chunk URLs, one URL per line.
 
-3. Run the script:
+3. Run the script with the file as an argument:
    ```bash
-   python domain_api_scanner.py
+   python domain_api_scanner.py -f file.txt
    ```
 
 4. View the results:
    - The script generates an HTML file named `scan_results.html` in the same directory.
    - Open it in your browser to view the results.
 
-### Example Configuration
-In the `main()` function:
-```python
-    domain = "example.com"
-    subdomains = ["api", "www", "dev"]
-    paths = ["/v1", "/v2", "/health", "/login"]
+### Example File Format
+Contents of `file.txt`:
+```
+https://example.com/static/js/chunk1.js
+https://example.com/static/js/chunk2.js
+https://example.com/static/js/chunk3.js
 ```
 
 ### Output
