@@ -1,5 +1,6 @@
 import requests
 import re
+import argparse
 
 patterns = {
     'api_keys': r"[\'"](?:[A-Za-z0-9-]{32,})[\'"]|[A-Za-z0-9-]{32,40}|AIza[0-9A-Za-z-_]{35}|AKIA[0-9A-Z]{16}|[0-9a-zA-Z/+]{40}",
@@ -21,15 +22,15 @@ patterns = {
 }
 
 # Function to fetch and process URLs
-def fetch_urls(domain, subdomains, paths):
-    results = []
-    for subdomain in subdomains:
-        for path in paths:
-            url = f"https://{subdomain}.{domain}{path}"
+def fetch_urls_from_file(file_path):
+    results = {}
+    with open(file_path, 'r') as f:
+        urls = [line.strip() for line in f.readlines() if line.strip()]
+        for url in urls:
             try:
                 response = requests.get(url, timeout=5)
                 if response.status_code == 200:
-                    results.append((url, response.text))
+                    results[url] = response.text
             except requests.RequestException as e:
                 print(f"Error accessing {url}: {e}")
     return results
@@ -76,8 +77,8 @@ def generate_html_report(results):
     <body>
         <h1>Scan Results</h1>
     """
-    for domain, data in results.items():
-        html_content += f"<div class='section'><h2>Results for {domain}</h2>"
+    for url, data in results.items():
+        html_content += f"<div class='section'><h2>Results for {url}</h2>"
         for key, items in data.items():
             html_content += f"<h3>{key.capitalize().replace('_', ' ')}</h3><ul>"
             for item in items:
@@ -87,28 +88,30 @@ def generate_html_report(results):
     html_content += "</body></html>"
     return html_content
 
-# Example Usage
-def main():
-    domain = "example.com"
-    subdomains = ["api", "www", "dev"]
-    paths = ["/v1", "/v2", "/health", "/login"]
+# Main function
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Chunk Scanner Script")
+    parser.add_argument("-f", "--file", required=True, help="Path to the file containing JavaScript chunk URLs")
+    args = parser.parse_args()
 
     # Fetch URLs and extract data
-    results = {}
-    for subdomain in subdomains:
-        fetched_data = fetch_urls(domain, [subdomain], paths)
-        for url, content in fetched_data:
-            if subdomain not in results:
-                results[subdomain] = {key: set() for key in patterns.keys()}
-            extracted = extract_data(content)
-            for key, items in extracted.items():
-                results[subdomain][key].update(items)
+    print("Fetching and analyzing JS chunks...")
+    raw_results = fetch_urls_from_file(args.file)
+    processed_results = {url: extract_data(content) for url, content in raw_results.items()}
 
     # Generate HTML report
-    report = generate_html_report(results)
+    print("Generating HTML report...")
+    report = generate_html_report(processed_results)
     with open("scan_results.html", "w", encoding="utf-8") as f:
         f.write(report)
     print("Scan results saved to scan_results.html")
 
-if __name__ == "__main__":
-    main()
+    print("\nHow to Use This Script:")
+    print("1. Collect JavaScript chunk URLs using one of these methods:")
+    print("   a. Use 'waybackurls' to fetch archived URLs for the target domain.")
+    print("   b. Browse the target site thoroughly, monitor all paths and features.")
+    print("   c. Use Burp Suite to capture requests, filter JS chunks, and save the URLs in a text file.")
+    print("2. Save the collected URLs to a file (e.g., 'urls-js.txt').")
+    print("3. Run the script with:")
+    print("   python3 chunk_scanner.py -f urls-js.txt")
+    print("4. View the results in the 'scan_results.html' file generated in the same directory.")
